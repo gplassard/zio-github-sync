@@ -9,6 +9,7 @@ lazy val root = (project in file("."))
     name := "zio-github-sync",
     libraryDependencies ++= Seq(
       zio,
+      sttp,
       scalaTest % Test
     )
   )

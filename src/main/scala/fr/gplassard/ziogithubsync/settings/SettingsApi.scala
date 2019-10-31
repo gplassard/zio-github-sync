@@ -4,5 +4,10 @@ import fr.gplassard.ziogithubsync.github.model.BranchSettings
 import zio.ZIO
 
 trait SettingsApi {
-  def fetchExpectedSettings(repo: String): ZIO[Any, Throwable, BranchSettings]
+  val settingsApi: SettingsApi.Service[Any]
+}
+object SettingsApi {
+  trait Service[T] {
+    def fetchExpectedSettings(repo: String): ZIO[T, Throwable, BranchSettings]
+  }
 }
