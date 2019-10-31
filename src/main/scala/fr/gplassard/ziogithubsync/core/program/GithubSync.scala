@@ -1,8 +1,8 @@
-package fr.gplassard.ziogithubsync.program
+package fr.gplassard.ziogithubsync.core.program
 
-import fr.gplassard.ziogithubsync.github.GithubApi
-import fr.gplassard.ziogithubsync.program.model.{GithubSyncResult, SyncResult}
-import fr.gplassard.ziogithubsync.settings.SettingsApi
+import fr.gplassard.ziogithubsync.core.github.GithubApi
+import fr.gplassard.ziogithubsync.core.program.model.{GithubSyncResult, SyncResult}
+import fr.gplassard.ziogithubsync.core.settings.SettingsApi
 import zio.ZIO
 
 object GithubSync {

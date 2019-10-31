@@ -1,4 +1,4 @@
-package fr.gplassard.ziogithubsync.program.model
+package fr.gplassard.ziogithubsync.core.program.model
 
 case class GithubSyncResult(repo: String, result: SyncResult)
 

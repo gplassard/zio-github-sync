@@ -1,6 +1,6 @@
-package fr.gplassard.ziogithubsync.github
+package fr.gplassard.ziogithubsync.core.github
 
-import fr.gplassard.ziogithubsync.github.model.BranchSettings
+import fr.gplassard.ziogithubsync.core.program.model.BranchSettings
 import zio.ZIO
 
 trait GithubApi {

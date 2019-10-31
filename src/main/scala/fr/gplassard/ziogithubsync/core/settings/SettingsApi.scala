@@ -1,6 +1,6 @@
-package fr.gplassard.ziogithubsync.settings
+package fr.gplassard.ziogithubsync.core.settings
 
-import fr.gplassard.ziogithubsync.github.model.BranchSettings
+import fr.gplassard.ziogithubsync.core.program.model.BranchSettings
 import zio.ZIO
 
 trait SettingsApi {

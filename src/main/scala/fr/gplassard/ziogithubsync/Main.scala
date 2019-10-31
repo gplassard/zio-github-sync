@@ -2,10 +2,10 @@ package fr.gplassard.ziogithubsync
 
 import java.nio.file.{Files, Paths}
 
-import fr.gplassard.ziogithubsync.github.GithubApi
+import fr.gplassard.ziogithubsync.core.github.GithubApi
 import fr.gplassard.ziogithubsync.infra.{GithubApiLive, SettingsApiLive}
-import fr.gplassard.ziogithubsync.program.GithubSync
-import fr.gplassard.ziogithubsync.settings.SettingsApi
+import fr.gplassard.ziogithubsync.core.program.GithubSync
+import fr.gplassard.ziogithubsync.core.settings.SettingsApi
 import zio.clock.Clock
 import zio.console._
 import zio.{DefaultRuntime, ZIO}

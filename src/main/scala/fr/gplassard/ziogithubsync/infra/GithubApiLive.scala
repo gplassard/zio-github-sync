@@ -1,7 +1,7 @@
 package fr.gplassard.ziogithubsync.infra
 
-import fr.gplassard.ziogithubsync.github.GithubApi
-import fr.gplassard.ziogithubsync.github.model.BranchSettings
+import fr.gplassard.ziogithubsync.core.github.GithubApi
+import fr.gplassard.ziogithubsync.core.program.model.BranchSettings
 import zio.ZIO
 import zio.clock.Clock
 import zio.console.Console
