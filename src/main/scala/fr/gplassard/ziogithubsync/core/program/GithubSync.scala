@@ -16,7 +16,7 @@ object GithubSync {
       currentSettings = res._2
       inSync = expectedSettings == currentSettings
       _ <-
-        if (!inSync) ZIO.accessM[GithubApi](_.githubApi.updateBranchSettings(repo, expectedSettings))
+        if (!inSync) ZIO.accessM[GithubApi](_.githubApi.updateBranchProtection(repo, expectedSettings))
         else ZIO.succeed(currentSettings)
     } yield GithubSyncResult(
       repo,

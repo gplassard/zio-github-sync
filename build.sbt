@@ -10,6 +10,9 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       zio,
       sttp,
+      sttpZio,
+      sttpJson4s,
+      json4s,
       scalaTest % Test
     )
   )
