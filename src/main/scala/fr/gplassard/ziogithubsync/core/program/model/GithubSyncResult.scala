@@ -1,6 +1,6 @@
 package fr.gplassard.ziogithubsync.core.program.model
 
-case class GithubSyncResult(repo: String, result: SyncResult)
+case class GithubSyncResult(repo: GithubRepo, result: SyncResult)
 
 sealed trait SyncResult
 object SyncResult {

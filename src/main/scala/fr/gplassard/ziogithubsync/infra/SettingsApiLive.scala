@@ -15,7 +15,7 @@ trait SettingsApiLive extends SettingsApi {
     override def fetchExpectedSettings(repo: String): ZIO[Any, Throwable, GithubBranchProtection] =
       clock.sleep(Duration.fromScala(scala.concurrent.duration.FiniteDuration((Math.random() * 10).toLong, "s")))
         .zipRight(console.putStrLn(s"fetch settings $repo"))
-        .zipRight(ZIO.succeed(GithubBranchProtection()))
+        .zipRight(ZIO.succeed(GithubBranchProtection(true)))
   }
 
 }

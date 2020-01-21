@@ -5,6 +5,7 @@ import java.nio.file.{Files, Paths}
 import fr.gplassard.ziogithubsync.core.github.GithubApi
 import fr.gplassard.ziogithubsync.infra.{GithubApiLive, SettingsApiLive}
 import fr.gplassard.ziogithubsync.core.program.GithubSync
+import fr.gplassard.ziogithubsync.core.program.model.GithubRepo
 import fr.gplassard.ziogithubsync.core.settings.SettingsApi
 import zio.clock.Clock
 import zio.console._
@@ -19,11 +20,15 @@ object Main extends App {
     _ <- putStrLn("Hello World!")
     repos <- ZIO.effect(Files.readAllLines(Paths.get("src", "main", "resources", "github_repos.txt")).asScala.toList)
     results <- ZIO.collectAllPar(
-      repos.map(GithubSync.sync)
+      repos.map(repo => {
+        val split = repo.split('/')
+        GithubSync.sync(GithubRepo(split(0), split(1)))
+      })
     )
     _ <- ZIO.collectAll(results.map(_.toString).map(putStrLn))
     _ <- putStrLn("Done!")
   } yield ()
 
   runtime.unsafeRun(program.provide(new GithubApiLive with Console.Live with Clock.Live with SettingsApiLive{}))
+  System.exit(0)
 }
