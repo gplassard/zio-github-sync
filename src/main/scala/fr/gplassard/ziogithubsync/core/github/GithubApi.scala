@@ -1,6 +1,6 @@
 package fr.gplassard.ziogithubsync.core.github
 
-import fr.gplassard.ziogithubsync.core.program.model.{GithubBranch, GithubBranchProtection, GithubRepo, GithubSettings}
+import fr.gplassard.ziogithubsync.core.program.model.{GithubBranch, GithubBranchProtection, GithubRepo, RepositorySettings}
 import zio.ZIO
 
 trait GithubApi {
@@ -11,6 +11,6 @@ object GithubApi {
   trait Service[T] {
     def fetchBranches(repo: GithubRepo): ZIO[T, Throwable, List[GithubBranch]]
     def updateBranchProtection(repo: GithubRepo, branch: String, settings: GithubBranchProtection): ZIO[T, Throwable, GithubBranchProtection]
-    def fetchRepositorySettings(repo: GithubRepo): ZIO[T, Throwable, GithubSettings]
+    def fetchRepositorySettings(repo: GithubRepo): ZIO[T, Throwable, RepositorySettings]
   }
 }

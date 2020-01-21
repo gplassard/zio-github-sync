@@ -1,6 +1,6 @@
 package fr.gplassard.ziogithubsync.core.settings
 
-import fr.gplassard.ziogithubsync.core.program.model.GithubBranchProtection
+import fr.gplassard.ziogithubsync.core.program.model.{GithubRepo, RepositorySettings}
 import zio.ZIO
 
 trait SettingsApi {
@@ -8,6 +8,6 @@ trait SettingsApi {
 }
 object SettingsApi {
   trait Service[T] {
-    def fetchExpectedSettings(repo: String): ZIO[T, Throwable, GithubBranchProtection]
+    def fetchExpectedSettings(repo: GithubRepo): ZIO[T, Throwable, RepositorySettings]
   }
 }

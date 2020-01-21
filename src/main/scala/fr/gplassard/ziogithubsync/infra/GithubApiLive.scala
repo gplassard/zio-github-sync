@@ -1,7 +1,7 @@
 package fr.gplassard.ziogithubsync.infra
 
 import fr.gplassard.ziogithubsync.core.github.GithubApi
-import fr.gplassard.ziogithubsync.core.program.model.{GithubBranch, GithubBranchProtection, GithubRepo, GithubSettings, GithubTeam}
+import fr.gplassard.ziogithubsync.core.program.model.{GithubBranch, GithubBranchProtection, GithubRepo, RepositorySettings, GithubTeam}
 import sttp.client._
 import sttp.client.json4s._
 import sttp.client.asynchttpclient.zio.AsyncHttpClientZioBackend
@@ -40,12 +40,16 @@ trait GithubApiLive extends GithubApi {
         branches <- ZIO.fromEither(body)
         _ <- console.putStrLn(s"Fetched branches for repo $repo : $branches")
       } yield branches
+
+      for {
+        _ <- console.putStrLn(s"updating branch settings $repo $branch $settings")
+      } yield settings
     }
 
-    override def fetchRepositorySettings(repo: GithubRepo): ZIO[Any, Throwable, GithubSettings] = {
+    override def fetchRepositorySettings(repo: GithubRepo): ZIO[Any, Throwable, RepositorySettings] = {
       for {
         branches <- this.fetchBranches(repo)
-      } yield GithubSettings(
+      } yield RepositorySettings(
         repo,
         branches
           .map(b => (b.name, GithubBranchProtection(b.`protected`)))

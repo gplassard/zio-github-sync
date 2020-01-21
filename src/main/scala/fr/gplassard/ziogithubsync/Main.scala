@@ -22,7 +22,7 @@ object Main extends App {
     results <- ZIO.collectAllPar(
       repos.map(repo => {
         val split = repo.split('/')
-        GithubSync.sync(GithubRepo(split(0), split(1)))
+        GithubSync.plan(GithubRepo(split(0), split(1)))
       })
     )
     _ <- ZIO.collectAll(results.map(_.toString).map(putStrLn))
