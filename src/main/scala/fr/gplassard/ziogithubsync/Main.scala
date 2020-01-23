@@ -19,11 +19,14 @@ object Main extends App {
   val program: ZIO[Console with GithubApi with SettingsApi, Throwable, Unit] = for {
     _ <- putStrLn("Hello World!")
     repos <- ZIO.effect(Files.readAllLines(Paths.get("src", "main", "resources", "github_repos.txt")).asScala.toList)
-    results <- ZIO.collectAllPar(
+    syncPlans <- ZIO.collectAllPar(
       repos.map(repo => {
         val split = repo.split('/')
         GithubSync.plan(GithubRepo(split(0), split(1)))
       })
+    )
+    results <- ZIO.collectAllPar(
+      syncPlans.map(plan => GithubSync.executePlan(plan))
     )
     _ <- ZIO.collectAll(results.map(_.toString).map(putStrLn))
     _ <- putStrLn("Done!")

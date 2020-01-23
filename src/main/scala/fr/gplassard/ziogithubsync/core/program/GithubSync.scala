@@ -24,4 +24,16 @@ object GithubSync {
     )
   }
 
+  def executePlan(syncPlan: SyncPlan): ZIO[GithubApi, Throwable, Boolean] = {
+    for {
+      _ <- ZIO.collectAllPar(
+        syncPlan.branchProtectionDiffs
+          .map{ _ match {
+            case (branch, Diff(_, Some(protection))) => ZIO.accessM[GithubApi](_.githubApi.updateBranchProtection(syncPlan.repo, branch, protection))
+            case (branch, Diff(_, None)) => ZIO.accessM[GithubApi](_.githubApi.deleteBranchProtection(syncPlan.repo, branch))
+          }}
+        )
+    } yield true
+  }
+
 }

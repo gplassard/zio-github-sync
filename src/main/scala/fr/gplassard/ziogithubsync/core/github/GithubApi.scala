@@ -10,7 +10,8 @@ trait GithubApi {
 object GithubApi {
   trait Service[T] {
     def fetchBranches(repo: GithubRepo): ZIO[T, Throwable, List[GithubBranch]]
-    def updateBranchProtection(repo: GithubRepo, branch: String, settings: GithubBranchProtection): ZIO[T, Throwable, GithubBranchProtection]
+    def updateBranchProtection(repo: GithubRepo, branch: String, settings: GithubBranchProtection): ZIO[T, Throwable, Unit]
+    def deleteBranchProtection(repo: GithubRepo, branch: String): ZIO[T, Throwable, Unit]
     def fetchRepositorySettings(repo: GithubRepo): ZIO[T, Throwable, RepositorySettings]
   }
 }

@@ -1,6 +1,6 @@
 package fr.gplassard.ziogithubsync.infra
 
-import fr.gplassard.ziogithubsync.core.program.model.{GithubBranchProtection, GithubRepo, RepositorySettings}
+import fr.gplassard.ziogithubsync.core.program.model.{GithubAuthentication, GithubBranchProtection, GithubRepo, RepositorySettings}
 import fr.gplassard.ziogithubsync.core.settings.SettingsApi
 import zio.ZIO
 import zio.clock.Clock
@@ -16,8 +16,11 @@ trait SettingsApiLive extends SettingsApi {
       clock.sleep(Duration.fromScala(scala.concurrent.duration.FiniteDuration((Math.random() * 3).toLong, "s")))
         .zipRight(console.putStrLn(s"fetch settings $repo"))
         .zipRight(ZIO.succeed(RepositorySettings(repo, Map(
-          "master" -> GithubBranchProtection(true)
+          "master" -> GithubBranchProtection(false, false, None, None, None, None, false)
         ))))
+
+    override def githubAuthentication(): ZIO[Any, Throwable, GithubAuthentication] =
+      ZIO.succeed(GithubAuthentication("SECRET"))
   }
 
 }
