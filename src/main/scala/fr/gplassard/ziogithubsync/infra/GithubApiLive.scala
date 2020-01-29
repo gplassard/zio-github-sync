@@ -37,7 +37,7 @@ trait GithubApiLive extends GithubApi {
       } yield branches
     }
 
-    override def getBranchProtection(repo: GithubRepo, branch: String): ZIO[Any, Throwable, GithubBranchProtection] = {
+    override def getBranchProtection(repo: GithubRepo, branch: String): ZIO[Any, Throwable, Option[GithubBranchProtection]] = {
       val req = (token:String) => basicRequest.get(uri"https://api.github.com/repos/${repo.owner}/${repo.repo}/branches/$branch/protection")
         .headers(Map("Authorization" -> s"token $token"))
         .response(asJson[GithubBranchProtection])
@@ -47,10 +47,15 @@ trait GithubApiLive extends GithubApi {
         response <- AsyncHttpClientZioBackend().map{ implicit backend =>
           req(authentication.oauthToken).send()
         }
-        body <- response.map(_.body)
-        protection <- ZIO.fromEither(body)
-        _ <- console.putStrLn(s"Get protection settings $repo $branch : $protection")
-      } yield protection
+        code <- response.map(_.code)
+        result <-
+          if (code.code == 404)
+            ZIO.succeed(None)
+          else for {
+            body <- response.map(_.body)
+            protection <- ZIO.fromEither(body)
+          } yield Some(protection)
+      } yield result
     }
 
     override def updateBranchProtection(repo: GithubRepo, branch: String, settings: GithubBranchProtection): ZIO[Any, Throwable, Unit] = {

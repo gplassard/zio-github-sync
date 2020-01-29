@@ -16,7 +16,7 @@ trait SettingsApiLive extends SettingsApi {
       clock.sleep(Duration.fromScala(scala.concurrent.duration.FiniteDuration((Math.random() * 3).toLong, "s")))
         .zipRight(console.putStrLn(s"fetch settings $repo"))
         .zipRight(ZIO.succeed(RepositorySettings(repo, Map(
-          "master" -> GithubBranchProtection(false, false, None, None, None, None, false)
+          "master" -> Some(GithubBranchProtection(false, false, None, None, None, None, false))
         ))))
 
     override def githubAuthentication(): ZIO[Any, Throwable, GithubAuthentication] =

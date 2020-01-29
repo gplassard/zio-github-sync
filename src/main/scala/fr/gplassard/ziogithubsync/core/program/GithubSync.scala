@@ -17,7 +17,7 @@ object GithubSync {
       outOfSyncBranches = expectedSettings
         .branchProtections
         .filterNot{case (branch, branchSetting) => currentSettings.branchProtections.get(branch).contains(branchSetting)}
-        .map{case (branch, branchSetting) => branch -> Diff(currentSettings.branchProtections.get(branch), Some(branchSetting))}
+        .map{case (branch, branchSetting) => branch -> Diff(currentSettings.branchProtections.get(branch).flatten, branchSetting)}
     } yield SyncPlan(
       repo,
       outOfSyncBranches
