@@ -4,58 +4,43 @@ package fr.gplassard.ziogithubsync.infra
 import fr.gplassard.ziogithubsync.core.github.GithubApi
 import fr.gplassard.ziogithubsync.core.program.model.{GithubBranch, GithubBranchProtection, GithubRepo, RepositorySettings}
 import fr.gplassard.ziogithubsync.core.settings.SettingsApi
+import github4s.Github._
+import github4s.free.domain.{Branch, BranchProtection}
+import github4s.{Github, HttpRequestBuilderExtensionJVM}
+import github4s.free.interpreters.{Capture, Interpreters}
 import org.json4s.DefaultFormats
 import org.json4s.native.Serialization
 import sttp.client._
 import sttp.client.asynchttpclient.zio.AsyncHttpClientZioBackend
 import sttp.client.json4s._
-import zio.ZIO
 import zio.clock.Clock
 import zio.console.Console
+import zio.{Task, ZIO}
 
 trait GithubApiLive extends GithubApi {
   val console: Console.Service[Any]
   val clock: Clock.Service[Any]
   val settingsApi: SettingsApi.Service[Any]
-  implicit val serialization = org.json4s.native.Serialization
-  implicit val serializer = DefaultFormats.preservingEmptyValues
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+  import github4s.implicits._
 
   final val githubApi = new GithubApi.Service[Any] {
-    override def fetchBranches(repo: GithubRepo): ZIO[Any, Throwable, List[GithubBranch]] = {
-      val req = (token:String) => basicRequest.get(uri"https://api.github.com/repos/${repo.owner}/${repo.repo}/branches")
-        .headers(Map("Authorization" -> s"token $token"))
-        .response(asJson[List[GithubBranch]])
-
+    override def fetchBranches(repo: GithubRepo): ZIO[Any, Throwable, List[Branch]] = {
       for {
         authentication <- settingsApi.githubAuthentication()
-        response <- AsyncHttpClientZioBackend().map{ implicit backend =>
-          req(authentication.oauthToken).send()
-        }
-        body <- response.map(_.body)
-        branches <- ZIO.fromEither(body)
+        ghReponse <- ZIO.fromFuture(_ => Github(Some(authentication.oauthToken)).repos.listBranches(repo.owner, repo.repo).execFuture(Map.empty))
+        branches <- ZIO.fromEither(ghReponse).map(_.result)
         _ <- console.putStrLn(s"Fetched branches for repo $repo : $branches")
       } yield branches
     }
 
-    override def getBranchProtection(repo: GithubRepo, branch: String): ZIO[Any, Throwable, Option[GithubBranchProtection]] = {
-      val req = (token:String) => basicRequest.get(uri"https://api.github.com/repos/${repo.owner}/${repo.repo}/branches/$branch/protection")
-        .headers(Map("Authorization" -> s"token $token"))
-        .response(asJson[GithubBranchProtection])
-
-      for {
+    override def getBranchProtection(repo: GithubRepo, branch: String): ZIO[Any, Throwable, Option[BranchProtection]] = {
+     for {
         authentication <- settingsApi.githubAuthentication()
-        response <- AsyncHttpClientZioBackend().map{ implicit backend =>
-          req(authentication.oauthToken).send()
-        }
-        code <- response.map(_.code)
-        result <-
-          if (code.code == 404)
-            ZIO.succeed(None)
-          else for {
-            body <- response.map(_.body)
-            protection <- ZIO.fromEither(body)
-          } yield Some(protection)
-      } yield result
+        ghReponse <- ZIO.fromFuture(_ => Github(Some(authentication.oauthToken)).branches.getBranchProtection(repo.owner, repo.repo, branch).execFuture(Map.empty))
+        result <- ZIO.fromEither(ghReponse)
+      } yield if (result.statusCode == 200) Some(result.result) else None
     }
 
     override def updateBranchProtection(repo: GithubRepo, branch: String, settings: GithubBranchProtection): ZIO[Any, Throwable, Unit] = {

@@ -13,6 +13,7 @@ lazy val root = (project in file("."))
       sttpZio,
       sttpJson4s,
       json4s,
+      github4s,
       scalaTest % Test
     )
   )
